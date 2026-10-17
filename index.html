@@ -230,7 +230,7 @@ var state = {
   maxRails: 3,
   C: [0.90, 0.25],                      // cue
   O: [1.60, 0.95],                      // object
-  P: [2.24 * 0.75, 1.12],               // pocket (default: near corner T-side)
+  P: [1.12, 1.12],                      // pocket target (default: lubang tengah rail atas)
   X: [1.12, 0.56],                      // draggable target circle (radial hub)
   A: [1.68, 0.20],                      // draggable aim handle for the V-bounce ray
   sols: [],
@@ -270,7 +270,8 @@ function rr(x, y, w, h, r) {
 }
 
 function pocketPts() {
-  return [[0, 0], [W, 0], [0, H], [W, H], [0, H / 2], [W, H / 2]];
+  // 4 sudut + 2 tengah di rail PANJANG (sisi horizontal: bawah & atas)
+  return [[0, 0], [W, 0], [0, H], [W, H], [W / 2, 0], [W / 2, H]];
 }
 
 function drawBall(x, y, fill, ring, label) {
@@ -309,7 +310,7 @@ function draw() {
   // pockets
   var pp = pocketPts();
   for (var i = 0; i < pp.length; i++) {
-    var isTarget = Math.abs(pp[i][0] - state.P[0]) < 1e-9 && Math.abs(pp[i][1] - state.P[1]) < 1e-9;
+    var isTarget = Math.hypot(pp[i][0] - state.P[0], pp[i][1] - state.P[1]) < 0.07;
     ctx.beginPath();
     ctx.arc(sx(pp[i][0]), sy(pp[i][1]), Math.max(6, scale * 0.07), 0, 7);
     ctx.fillStyle = '#0b0b0b'; ctx.fill();
@@ -512,7 +513,7 @@ document.getElementById('rMinus').onclick = function () { setRails(state.maxRail
 document.getElementById('rPlus').onclick = function () { setRails(state.maxRails + 1); };
 
 document.getElementById('btnReset').onclick = function () {
-  state.C = [0.90, 0.25]; state.O = [1.60, 0.95]; state.P = [W * 0.75, H];
+  state.C = [0.90, 0.25]; state.O = [1.60, 0.95]; state.P = [W / 2, H];
   state.X = [W / 2, H / 2];
   state.A = [W * 0.75, 0.20];
   setMode('kick'); setRails(3);
